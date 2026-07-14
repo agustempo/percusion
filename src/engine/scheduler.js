@@ -45,8 +45,48 @@ export class Engine {
       comp.attack.value = 0.003
       comp.release.value = 0.12
       this.master.connect(comp).connect(this.ctx.destination)
+      this._initUnlock()
     }
+    // Desbloqueo iOS: reproducir el <audio> silencioso DENTRO del gesto (antes
+    // de cualquier await) para cambiar la sesión de audio a "playback", que
+    // ignora el interruptor de silencio y deja sonar Web Audio.
+    if (this._silentEl) { try { this._silentEl.play() } catch { /* noop */ } }
     if (this.ctx.state === 'suspended') await this.ctx.resume()
+  }
+
+  // Crea un elemento <audio> con un loop de silencio real (PCM) + listeners
+  // para reanudar el contexto cuando iOS lo interrumpe (llamada, cambio de app).
+  _initUnlock() {
+    try {
+      this._silentEl = this._makeSilentAudio()
+    } catch { /* noop */ }
+    const resume = () => {
+      if (this.ctx && this.ctx.state !== 'running') this.ctx.resume().catch(() => {})
+      if (this.isPlaying && this._silentEl) this._silentEl.play().catch(() => {})
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) resume()
+    })
+    this.ctx.addEventListener?.('statechange', resume)
+  }
+
+  _makeSilentAudio() {
+    const sr = 8000
+    const n = sr * 0.5 // 0.5s de silencio, en loop
+    const buf = new ArrayBuffer(44 + n)
+    const v = new DataView(buf)
+    const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)) }
+    str(0, 'RIFF'); v.setUint32(4, 36 + n, true); str(8, 'WAVE')
+    str(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true)
+    v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr, true)
+    v.setUint16(32, 1, true); v.setUint16(34, 8, true)
+    str(36, 'data'); v.setUint32(40, n, true)
+    for (let i = 0; i < n; i++) v.setUint8(44 + i, 128) // 128 = silencio (8-bit unsigned)
+    const el = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })))
+    el.loop = true
+    el.playsInline = true
+    el.setAttribute('playsinline', '')
+    return el
   }
 
   // Duración de un compás en segundos, respetando numerador y denominador.
