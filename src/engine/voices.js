@@ -239,6 +239,19 @@ function clave(ctx, dest, t, { freq = 2200, vel = 1 }) {
   o1.start(t); o2.start(t); o1.stop(t + 0.06); o2.stop(t + 0.06)
 }
 
+// Sample: reproduce un AudioBuffer ya decodificado. Agendar un buffer con
+// .start(t) es incluso más preciso que la síntesis. `rate` permite afinar.
+function sample(ctx, dest, t, { buffer, rate = 1, vel = 1 }) {
+  if (!buffer) return
+  const src = ctx.createBufferSource()
+  src.buffer = buffer
+  if (rate !== 1) src.playbackRate.value = rate
+  const g = ctx.createGain()
+  g.gain.value = vel
+  src.connect(g).connect(dest)
+  src.start(t)
+}
+
 // Click de metrónomo / count-in.
 function click(ctx, dest, t, { accent = false, vel = 1 }) {
   const o = ctx.createOscillator()
@@ -251,4 +264,4 @@ function click(ctx, dest, t, { accent = false, vel = 1 }) {
   o.stop(t + 0.05)
 }
 
-export const VOICES = { surdo, caixa, tamborim, bell, membrane, cowbell, shaker, clave, click }
+export const VOICES = { surdo, caixa, tamborim, bell, membrane, cowbell, shaker, clave, sample, click }

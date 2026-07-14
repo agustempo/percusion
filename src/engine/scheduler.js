@@ -14,6 +14,7 @@
 
 import { INSTRUMENTS } from './instruments.js'
 import { VOICES } from './voices.js'
+import { sampleBank, loadSamples } from './samples.js'
 
 const LOOKAHEAD_MS = 25 // cada cuánto despierta el timer
 const SCHEDULE_AHEAD = 0.12 // s: ventana que programamos por adelantado
@@ -52,6 +53,18 @@ export class Engine {
     // ignora el interruptor de silencio y deja sonar Web Audio.
     if (this._silentEl) { try { this._silentEl.play() } catch { /* noop */ } }
     if (this.ctx.state === 'suspended') await this.ctx.resume()
+    loadSamples(this.ctx) // fire-and-forget: si hay samples, los carga
+  }
+
+  // Dispara un golpe: usa el sample si existe, si no cae a la síntesis.
+  _fire(stroke, instrument, strokeId, when, vel) {
+    const buf = sampleBank.get(instrument + '/' + strokeId)
+    if (buf) {
+      VOICES.sample(this.ctx, this.master, when, { buffer: buf, vel })
+      return
+    }
+    const fn = VOICES[stroke.voice.type]
+    if (fn) fn(this.ctx, this.master, when, { ...stroke.voice, vel })
   }
 
   // Crea un elemento <audio> con un loop de silencio real (PCM) + listeners
@@ -172,17 +185,14 @@ export class Engine {
           const inst = INSTRUMENTS[track.instrument]
           const stroke = inst && inst.strokes.find((s) => s.id === cell.s)
           if (stroke) {
-            const fn = VOICES[stroke.voice.type]
-            if (fn) {
-              // Swing (grid) + humanize (jitter) desplazan el tiempo real,
-              // sin tocar cur.nextTime (que ordena el scheduler).
-              const tJit = (Math.random() * 2 - 1) * hum * 0.012
-              let t = cur.nextTime + this._swing(track, local) + tJit
-              if (t < now) t = now + 0.001
-              const gJit = 1 + (Math.random() * 2 - 1) * hum * 0.15
-              const vel = Math.min(1.4, track.volume * cell.v * gJit)
-              fn(this.ctx, this.master, t, { ...stroke.voice, vel })
-            }
+            // Swing (grid) + humanize (jitter) desplazan el tiempo real,
+            // sin tocar cur.nextTime (que ordena el scheduler).
+            const tJit = (Math.random() * 2 - 1) * hum * 0.012
+            let when = cur.nextTime + this._swing(track, local) + tJit
+            if (when < now) when = now + 0.001
+            const gJit = 1 + (Math.random() * 2 - 1) * hum * 0.15
+            const vel = Math.min(1.4, track.volume * cell.v * gJit)
+            this._fire(stroke, track.instrument, cell.s, when, vel)
           }
         }
         cur.absStep++
@@ -239,8 +249,7 @@ export class Engine {
     const inst = INSTRUMENTS[instrumentId]
     const stroke = inst && inst.strokes.find((s) => s.id === strokeId)
     if (!stroke) return
-    const fn = VOICES[stroke.voice.type]
-    if (fn) fn(this.ctx, this.master, this.ctx.currentTime + 0.01, { ...stroke.voice, vel })
+    this._fire(stroke, instrumentId, strokeId, this.ctx.currentTime + 0.01, vel)
   }
 
   async unlock() {

@@ -92,8 +92,14 @@ function tick() {
   }
   raf = requestAnimationFrame(tick)
 }
+// Créditos de samples (atribución CC-BY). Vacío si todo es síntesis.
+const credits = ref([])
 onMounted(() => {
   raf = requestAnimationFrame(tick)
+  fetch(`${import.meta.env.BASE_URL}samples/attribution.json`, { cache: 'no-cache' })
+    .then((r) => (r.ok ? r.json() : []))
+    .then((c) => { credits.value = Array.isArray(c) ? c : [] })
+    .catch(() => {})
 })
 onUnmounted(() => {
   cancelAnimationFrame(raf)
@@ -389,6 +395,20 @@ const instColor = (id) => INSTRUMENTS[id].color
       (click = dinámica, click derecho = golpe). Elegí un <b>modo de estudio</b> arriba
       para silenciar o aislar un instrumento.
     </p>
+
+    <!-- Créditos de samples (atribución CC-BY) -->
+    <footer v-if="credits.length" class="credits">
+      <details>
+        <summary>Créditos de sonidos ({{ credits.length }})</summary>
+        <ul>
+          <li v-for="(c, i) in credits" :key="i">
+            <b>{{ c.instrument }}</b> · “{{ c.name }}” por {{ c.author }} —
+            <a :href="c.url" target="_blank" rel="noopener">{{ c.license }}</a>
+            <span v-if="c.source"> ({{ c.source }})</span>
+          </li>
+        </ul>
+      </details>
+    </footer>
   </div>
 </template>
 
@@ -427,6 +447,11 @@ const instColor = (id) => INSTRUMENTS[id].color
 .lsw { width: 12px; height: 12px; border-radius: 50%; }
 .lname { color: #d8d4cf; }
 .wheelhint { text-align: center; }
+
+.credits { margin-top: 26px; border-top: 1px solid #2a2825; padding-top: 12px; }
+.credits summary { cursor: pointer; color: #9a958f; font-size: 12.5px; }
+.credits ul { margin: 8px 0 0; padding-left: 18px; color: #8a8580; font-size: 12px; line-height: 1.6; }
+.credits a { color: #b8b4af; }
 
 .transport {
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
