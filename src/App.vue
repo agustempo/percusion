@@ -2,7 +2,7 @@
 import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
 import { engine } from './engine/scheduler.js'
 import { INSTRUMENTS, INSTRUMENT_IDS } from './engine/instruments.js'
-import { SEED_RHYTHMS, makeTrack, normalizePattern, VEL } from './engine/patterns.js'
+import { SEED_RHYTHMS, RHYTHM_GROUPS, makeTrack, normalizePattern, VEL } from './engine/patterns.js'
 import CircularView from './components/CircularView.vue'
 
 // --- Estado: el patrón es la única fuente de verdad ---
@@ -11,6 +11,17 @@ const playing = ref(false)
 const phase = ref(-1) // fase del compás [0,1) para el playhead
 const newInstrument = ref('surdo')
 const view = ref('grid') // 'grid' | 'wheel' — dos lecturas del mismo patrón
+const currentRhythm = ref('samba')
+
+// Ritmos organizados por familia para el <select>.
+const rhythmGroups = computed(() =>
+  RHYTHM_GROUPS.map((group) => ({
+    group,
+    items: Object.entries(SEED_RHYTHMS)
+      .filter(([, r]) => r.group === group)
+      .map(([key, r]) => ({ key, label: r.label })),
+  })).filter((g) => g.items.length)
+)
 
 // --- Modos de estudio (StudySession del doc, sección 4/9) ---
 const study = reactive({ mode: 'none', trackId: null })
@@ -189,8 +200,10 @@ function toggleSolo(t) { t.solo = !t.solo }
 
 // --- Cargar ritmo semilla ---
 function loadRhythm(key) {
-  const fresh = SEED_RHYTHMS[key].make()
-  Object.assign(pattern, fresh)
+  Object.assign(pattern, SEED_RHYTHMS[key].make())
+  currentRhythm.value = key
+  study.mode = 'none' // los tracks cambian: reseteamos el modo de estudio
+  study.trackId = null
   if (playing.value) engine.reschedule()
 }
 
@@ -219,9 +232,11 @@ const instColor = (id) => INSTRUMENTS[id].color
         <span class="tag">V0 · spike de motor</span>
       </div>
       <div class="rhythms">
-        <button v-for="(r, key) in SEED_RHYTHMS" :key="key" class="chip" @click="loadRhythm(key)">
-          {{ r.label }}
-        </button>
+        <select class="rsel" :value="currentRhythm" @change="loadRhythm($event.target.value)">
+          <optgroup v-for="g in rhythmGroups" :key="g.group" :label="g.group">
+            <option v-for="it in g.items" :key="it.key" :value="it.key">{{ it.label }}</option>
+          </optgroup>
+        </select>
         <div class="viewtoggle">
           <button :class="{ on: view === 'grid' }" @click="view = 'grid'">Grilla</button>
           <button :class="{ on: view === 'wheel' }" @click="view = 'wheel'">Círculo</button>
@@ -390,8 +405,7 @@ const instColor = (id) => INSTRUMENTS[id].color
 .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: #e07a5f; box-shadow: 0 0 12px #e07a5f; }
 .tag { font-size: 11px; font-weight: 500; color: #8a8580; background: #2a2825; padding: 3px 8px; border-radius: 20px; }
 .rhythms { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.chip { background: #2a2825; color: #d8d4cf; border: 1px solid #3a3733; border-radius: 20px; padding: 6px 14px; cursor: pointer; font-size: 13px; }
-.chip:hover { background: #34312d; border-color: #4a463f; }
+.rsel { background: #2a2825; color: #d8d4cf; border: 1px solid #3a3733; border-radius: 8px; padding: 7px 12px; cursor: pointer; font-size: 14px; font-weight: 600; }
 .viewtoggle { display: inline-flex; margin-left: 4px; border: 1px solid #3a3733; border-radius: 20px; overflow: hidden; }
 .viewtoggle button { background: #1c1b1a; color: #9a958f; border: none; padding: 6px 14px; cursor: pointer; font-size: 13px; }
 .viewtoggle button.on { background: #e07a5f; color: #1a1817; font-weight: 600; }

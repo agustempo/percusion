@@ -115,9 +115,9 @@ function tamborim(ctx, dest, t, { vel = 1 }) {
   n.start(t); n.stop(t + 0.06)
 }
 
-// Campana (agogô): timbre metálico por FM (modulación con ratio inarmónico)
-// + un parcial extra. Ataque brillante y cola que resuena.
-function bell(ctx, dest, t, { freq = 800, vel = 1 }) {
+// Campana (agogô) / triángulo: timbre metálico por FM (modulación con ratio
+// inarmónico) + un parcial extra. `decay` controla la cola (triángulo = larga).
+function bell(ctx, dest, t, { freq = 800, decay = 0.5, vel = 1 }) {
   const carrier = ctx.createOscillator()
   carrier.type = 'sine'
   carrier.frequency.value = freq
@@ -134,12 +134,64 @@ function bell(ctx, dest, t, { freq = 800, vel = 1 }) {
   const p2g = ctx.createGain()
   p2g.gain.value = 0.18
   const g = ctx.createGain()
-  hit(g, t, vel * 0.5, 0.003, 0.5)
+  hit(g, t, vel * 0.5, 0.003, decay)
   carrier.connect(g)
   p2.connect(p2g).connect(g)
   g.connect(dest)
+  const end = t + decay + 0.05
   carrier.start(t); mod.start(t); p2.start(t)
-  carrier.stop(t + 0.55); mod.stop(t + 0.55); p2.stop(t + 0.55)
+  carrier.stop(end); mod.stop(end); p2.stop(end)
+}
+
+// Membrana afinada: sirve para congas, bongó, djembe, bombo. Cuerpo con caída
+// de pitch + armónico, y ruido opcional para el slap/ataque de mano.
+function membrane(ctx, dest, t, { freq = 220, decay = 0.18, bend = 0.72, noise = 0, noiseFreq = 3200, vel = 1 }) {
+  const o1 = ctx.createOscillator()
+  o1.type = 'sine'
+  o1.frequency.setValueAtTime(freq, t)
+  o1.frequency.exponentialRampToValueAtTime(freq * bend, t + decay * 0.5)
+  const o2 = ctx.createOscillator()
+  o2.type = 'triangle'
+  o2.frequency.setValueAtTime(freq * 1.6, t)
+  o2.frequency.exponentialRampToValueAtTime(freq * 1.6 * bend, t + decay * 0.5)
+  const o2g = ctx.createGain()
+  o2g.gain.value = 0.28
+  const g = ctx.createGain()
+  hit(g, t, vel * 0.8, 0.002, decay)
+  o1.connect(g); o2.connect(o2g).connect(g); g.connect(dest)
+  o1.start(t); o2.start(t)
+  o1.stop(t + decay + 0.05); o2.stop(t + decay + 0.05)
+  if (noise > 0) {
+    const n = ctx.createBufferSource()
+    n.buffer = noiseBuffer(ctx)
+    const bp = ctx.createBiquadFilter()
+    bp.type = 'bandpass'
+    bp.frequency.value = noiseFreq
+    bp.Q.value = 0.9
+    const ng = ctx.createGain()
+    hit(ng, t, vel * 0.55 * noise, 0.001, 0.05)
+    n.connect(bp).connect(ng).connect(dest)
+    n.start(t); n.stop(t + 0.08)
+  }
+}
+
+// Cencerro / cowbell: dos ondas cuadradas por bandpass (el clásico timbre 808).
+function cowbell(ctx, dest, t, { vel = 1 }) {
+  const o1 = ctx.createOscillator()
+  o1.type = 'square'
+  o1.frequency.value = 540
+  const o2 = ctx.createOscillator()
+  o2.type = 'square'
+  o2.frequency.value = 800
+  const bp = ctx.createBiquadFilter()
+  bp.type = 'bandpass'
+  bp.frequency.value = 2640
+  bp.Q.value = 1
+  const g = ctx.createGain()
+  hit(g, t, vel * 0.42, 0.002, 0.17)
+  o1.connect(bp); o2.connect(bp); bp.connect(g).connect(dest)
+  o1.start(t); o2.start(t)
+  o1.stop(t + 0.2); o2.stop(t + 0.2)
 }
 
 // Chocalho / shaker: ruido muy agudo con ataque suave (los perdigones).
@@ -162,23 +214,23 @@ function shaker(ctx, dest, t, { vel = 1 }) {
   n.stop(t + 0.08)
 }
 
-// Clave: "tock" de madera. Ruido por bandpass de Q alto (resonancia woody)
-// + dos parciales tonales.
-function clave(ctx, dest, t, { vel = 1 }) {
+// Clave / woodblock: "tock" de madera. Ruido por bandpass de Q alto
+// (resonancia woody) + dos parciales tonales. `freq` afina la altura.
+function clave(ctx, dest, t, { freq = 2200, vel = 1 }) {
   const n = ctx.createBufferSource()
   n.buffer = noiseBuffer(ctx)
   const bp = ctx.createBiquadFilter()
   bp.type = 'bandpass'
-  bp.frequency.value = 2200
+  bp.frequency.value = freq
   bp.Q.value = 8
   const ng = ctx.createGain()
   hit(ng, t, vel * 0.5, 0.001, 0.06)
   const o1 = ctx.createOscillator()
   o1.type = 'sine'
-  o1.frequency.value = 2500
+  o1.frequency.value = freq * 1.13
   const o2 = ctx.createOscillator()
   o2.type = 'sine'
-  o2.frequency.value = 1250
+  o2.frequency.value = freq * 0.57
   const og = ctx.createGain()
   hit(og, t, vel * 0.4, 0.001, 0.05)
   n.connect(bp).connect(ng).connect(dest)
@@ -199,4 +251,4 @@ function click(ctx, dest, t, { accent = false, vel = 1 }) {
   o.stop(t + 0.05)
 }
 
-export const VOICES = { surdo, caixa, tamborim, bell, shaker, clave, click }
+export const VOICES = { surdo, caixa, tamborim, bell, membrane, cowbell, shaker, clave, click }

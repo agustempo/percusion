@@ -51,6 +51,69 @@ export const INSTRUMENTS = {
     color: '#bc6c25',
     strokes: [{ id: 'hit', label: 'Golpe', voice: { type: 'clave' } }],
   },
+  conga: {
+    name: 'Conga',
+    color: '#c1666b',
+    strokes: [
+      { id: 'open', label: 'Abierto', voice: { type: 'membrane', freq: 240, decay: 0.22, noise: 0.15 } },
+      { id: 'slap', label: 'Slap', voice: { type: 'membrane', freq: 300, decay: 0.08, noise: 0.9, noiseFreq: 3600 } },
+      { id: 'mute', label: 'Apagado', voice: { type: 'membrane', freq: 220, decay: 0.08, noise: 0.1 } },
+    ],
+  },
+  bongo: {
+    name: 'Bongó',
+    color: '#d4a373',
+    strokes: [
+      { id: 'open', label: 'Abierto', voice: { type: 'membrane', freq: 400, decay: 0.13, noise: 0.15 } },
+      { id: 'slap', label: 'Slap', voice: { type: 'membrane', freq: 480, decay: 0.07, noise: 0.85, noiseFreq: 4200 } },
+    ],
+  },
+  djembe: {
+    name: 'Djembe',
+    color: '#a3714f',
+    strokes: [
+      { id: 'bass', label: 'Bajo', voice: { type: 'membrane', freq: 90, decay: 0.34, bend: 0.6 } },
+      { id: 'tone', label: 'Tono', voice: { type: 'membrane', freq: 280, decay: 0.15, noise: 0.25 } },
+      { id: 'slap', label: 'Slap', voice: { type: 'membrane', freq: 380, decay: 0.1, noise: 1, noiseFreq: 4200 } },
+    ],
+  },
+  timbal: {
+    name: 'Timbal',
+    color: '#8ecae6',
+    strokes: [
+      { id: 'open', label: 'Abierto', voice: { type: 'membrane', freq: 320, decay: 0.12, noise: 0.35, noiseFreq: 4000 } },
+      { id: 'paila', label: 'Paila', voice: { type: 'clave', freq: 3200 } },
+    ],
+  },
+  cencerro: {
+    name: 'Cencerro',
+    color: '#e9c46a',
+    strokes: [{ id: 'hit', label: 'Golpe', voice: { type: 'cowbell' } }],
+  },
+  woodblock: {
+    name: 'Woodblock',
+    color: '#9c6644',
+    strokes: [
+      { id: 'hi', label: 'Agudo', voice: { type: 'clave', freq: 1700 } },
+      { id: 'lo', label: 'Grave', voice: { type: 'clave', freq: 1150 } },
+    ],
+  },
+  triangulo: {
+    name: 'Triángulo',
+    color: '#cfd6e6',
+    strokes: [
+      { id: 'open', label: 'Abierto', voice: { type: 'bell', freq: 4200, decay: 1.1 } },
+      { id: 'mute', label: 'Apagado', voice: { type: 'bell', freq: 4200, decay: 0.13 } },
+    ],
+  },
+  bombo: {
+    name: 'Bombo',
+    color: '#774936',
+    strokes: [
+      { id: 'hit', label: 'Parche', voice: { type: 'membrane', freq: 72, decay: 0.4, bend: 0.62 } },
+      { id: 'rim', label: 'Aro', voice: { type: 'clave', freq: 1400 } },
+    ],
+  },
 }
 
 export const INSTRUMENT_IDS = Object.keys(INSTRUMENTS)

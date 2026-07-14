@@ -125,12 +125,139 @@ function tresContraDos() {
   }
 }
 
-export const SEED_RHYTHMS = {
-  samba: { label: 'Samba', make: samba },
-  candombe: { label: 'Candombe', make: candombe },
-  tresContraDos: { label: '3 contra 2', make: tresContraDos },
-  vacio: { label: 'Vacío', make: emptyPattern },
+function bossa() {
+  return {
+    name: 'Bossa nova', bpm: 130, beatsPerBar: 4, beatUnit: 4,
+    countIn: true, metronome: false, swing: 0.06, humanize: 0.16,
+    tracks: [
+      // Clave de bossa (3-2).
+      makeTrack('clave', 16, fill(16, [
+        [0, 'hit', VEL.accent], [3, 'hit'], [6, 'hit'], [10, 'hit'], [12, 'hit'],
+      ])),
+      // Surdo grave suave en 1 y 3.
+      makeTrack('surdo', 4, fill(4, [[0, 'mute'], [2, 'mute']])),
+      // Chocalho: corcheas parejas y tenues.
+      makeTrack('chocalho', 16, fill(16, [0, 2, 4, 6, 8, 10, 12, 14].map((i) => [i, 'hit', VEL.ghost]))),
+    ],
+  }
 }
+
+function murga() {
+  return {
+    name: 'Murga', bpm: 120, beatsPerBar: 4, beatUnit: 4,
+    countIn: true, metronome: false, swing: 0.06, humanize: 0.2,
+    tracks: [
+      // Bombo: marcha con platillo (aro).
+      makeTrack('bombo', 8, fill(8, [
+        [0, 'hit', VEL.accent], [3, 'rim'], [4, 'hit', VEL.accent], [6, 'rim'],
+      ])),
+      // Redoblante (caixa) con acentos y ghosts.
+      makeTrack('caixa', 16, fill(16, [
+        [0, 'hit', VEL.ghost], [2, 'hit'], [4, 'rim', VEL.accent], [7, 'hit', VEL.ghost],
+        [8, 'hit'], [10, 'hit', VEL.ghost], [12, 'rim', VEL.accent], [15, 'hit', VEL.ghost],
+      ])),
+      // Platillos (chocalho) en cada tiempo.
+      makeTrack('chocalho', 4, fill(4, [[0, 'hit'], [1, 'hit'], [2, 'hit'], [3, 'hit']])),
+    ],
+  }
+}
+
+function rumba() {
+  return {
+    name: 'Rumba (guaguancó)', bpm: 96, beatsPerBar: 4, beatUnit: 4,
+    countIn: true, metronome: false, swing: 0.1, humanize: 0.2,
+    tracks: [
+      // Clave de rumba (3-2).
+      makeTrack('clave', 16, fill(16, [
+        [0, 'hit', VEL.accent], [3, 'hit'], [6, 'hit'], [10, 'hit'], [12, 'hit'],
+      ])),
+      // Conga: tumbao (open + slap).
+      makeTrack('conga', 16, fill(16, [
+        [3, 'slap'], [6, 'open'], [7, 'open'], [10, 'slap', VEL.accent], [14, 'open'], [15, 'open'],
+      ])),
+      // Palitos (woodblock) en corcheas.
+      makeTrack('woodblock', 8, fill(8, [0, 1, 2, 3, 4, 5, 6, 7].map((i) => [i, 'hi', i % 2 ? VEL.ghost : VEL.normal]))),
+    ],
+  }
+}
+
+function cumbia() {
+  return {
+    name: 'Cumbia', bpm: 92, beatsPerBar: 4, beatUnit: 4,
+    countIn: true, metronome: false, swing: 0.08, humanize: 0.18,
+    tracks: [
+      // Cencerro (campana) marcando.
+      makeTrack('cencerro', 8, fill(8, [
+        [0, 'hit', VEL.accent], [2, 'hit'], [4, 'hit', VEL.accent], [6, 'hit'],
+      ])),
+      // Conga.
+      makeTrack('conga', 16, fill(16, [
+        [2, 'open'], [3, 'slap'], [6, 'open'], [10, 'open'], [11, 'slap'], [14, 'open'],
+      ])),
+      // Guacharaca (chocalho) raspando.
+      makeTrack('chocalho', 16, fill(16, [
+        [0, 'hit'], [2, 'hit', VEL.ghost], [3, 'hit', VEL.ghost], [4, 'hit'],
+        [6, 'hit', VEL.ghost], [7, 'hit', VEL.ghost], [8, 'hit'], [10, 'hit', VEL.ghost],
+        [11, 'hit', VEL.ghost], [12, 'hit'], [14, 'hit', VEL.ghost], [15, 'hit', VEL.ghost],
+      ])),
+      // Bombo en 1 y 3.
+      makeTrack('bombo', 4, fill(4, [[0, 'hit', VEL.accent], [2, 'hit']])),
+    ],
+  }
+}
+
+function funk() {
+  return {
+    name: 'Funk', bpm: 100, beatsPerBar: 4, beatUnit: 4,
+    countIn: true, metronome: false, swing: 0, humanize: 0.14,
+    tracks: [
+      // Bombo (kick) sincopado.
+      makeTrack('surdo', 16, fill(16, [[0, 'open', VEL.accent], [6, 'open'], [10, 'open']])),
+      // Caixa (snare): backbeat en 2 y 4 + ghost notes.
+      makeTrack('caixa', 16, fill(16, [
+        [2, 'hit', VEL.ghost], [4, 'hit', VEL.accent], [7, 'hit', VEL.ghost],
+        [9, 'hit', VEL.ghost], [12, 'hit', VEL.accent], [14, 'hit', VEL.ghost],
+      ])),
+      // Chocalho (hi-hat) en semicorcheas, acento por tiempo.
+      makeTrack('chocalho', 16, fill(16, Array.from({ length: 16 }, (_, i) => [i, 'hit', i % 4 === 0 ? VEL.normal : VEL.ghost]))),
+    ],
+  }
+}
+
+function reggaeton() {
+  return {
+    name: 'Reggaetón (dembow)', bpm: 94, beatsPerBar: 4, beatUnit: 4,
+    countIn: true, metronome: false, swing: 0, humanize: 0.12,
+    tracks: [
+      // Bombo (kick) en 1 y 3.
+      makeTrack('surdo', 16, fill(16, [[0, 'open', VEL.accent], [8, 'open', VEL.accent]])),
+      // Caixa (snare): patrón dembow "boom-ch-boom-chick".
+      makeTrack('caixa', 16, fill(16, [
+        [3, 'hit', VEL.accent], [6, 'hit'], [8, 'hit', VEL.ghost],
+        [11, 'hit', VEL.accent], [14, 'hit'],
+      ])),
+      // Cencerro / hats en corcheas.
+      makeTrack('chocalho', 16, fill(16, [0, 2, 4, 6, 8, 10, 12, 14].map((i) => [i, 'hit', VEL.ghost]))),
+    ],
+  }
+}
+
+// Ritmos agrupados por familia (para el selector).
+export const SEED_RHYTHMS = {
+  samba: { label: 'Samba', group: 'Brasil', make: samba },
+  bossa: { label: 'Bossa nova', group: 'Brasil', make: bossa },
+  candombe: { label: 'Candombe', group: 'Afro-uruguayo', make: candombe },
+  murga: { label: 'Murga', group: 'Afro-uruguayo', make: murga },
+  rumba: { label: 'Rumba (guaguancó)', group: 'Cuba / Latino', make: rumba },
+  cumbia: { label: 'Cumbia', group: 'Cuba / Latino', make: cumbia },
+  funk: { label: 'Funk', group: 'Popular', make: funk },
+  reggaeton: { label: 'Reggaetón (dembow)', group: 'Popular', make: reggaeton },
+  tresContraDos: { label: '3 contra 2', group: 'Ejercicios', make: tresContraDos },
+  vacio: { label: 'Vacío', group: 'Ejercicios', make: emptyPattern },
+}
+
+// Orden de las familias en el selector.
+export const RHYTHM_GROUPS = ['Brasil', 'Afro-uruguayo', 'Cuba / Latino', 'Popular', 'Ejercicios']
 
 // Migra patrones viejos (paso = string) al formato { s, v } y asegura campos.
 export function normalizePattern(p) {
