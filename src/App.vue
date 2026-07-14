@@ -3,12 +3,43 @@ import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
 import { engine } from './engine/scheduler.js'
 import { INSTRUMENTS, INSTRUMENT_IDS } from './engine/instruments.js'
 import { SEED_RHYTHMS, makeTrack, normalizePattern, VEL } from './engine/patterns.js'
+import CircularView from './components/CircularView.vue'
 
 // --- Estado: el patrón es la única fuente de verdad ---
 const pattern = reactive(SEED_RHYTHMS.samba.make())
 const playing = ref(false)
 const phase = ref(-1) // fase del compás [0,1) para el playhead
 const newInstrument = ref('surdo')
+const view = ref('grid') // 'grid' | 'wheel' — dos lecturas del mismo patrón
+
+// --- Modos de estudio (StudySession del doc, sección 4/9) ---
+const study = reactive({ mode: 'none', trackId: null })
+// Aplica el modo seteando mute/solo del track elegido (la banda se re-mezcla sola).
+function applyStudy() {
+  pattern.tracks.forEach((t) => { t.mute = false; t.solo = false })
+  const t = pattern.tracks.find((x) => x.id === study.trackId)
+  if (!t) return
+  if (study.mode === 'practice') t.mute = true // lo tocás vos encima de la banda
+  else if (study.mode === 'isolate') t.solo = true // escuchás solo ese
+}
+function onStudyMode() {
+  if (study.mode !== 'none' && !pattern.tracks.some((t) => t.id === study.trackId)) {
+    study.trackId = pattern.tracks[0]?.id ?? null
+  }
+  applyStudy()
+}
+
+// --- Tempo trainer (tempo progresivo): sube el BPM cada N compases ---
+const trainer = reactive({ on: false, from: 70, to: 120, step: 4, everyBars: 2 })
+let trainerBars = 0
+function onTrainer() {
+  if (trainer.on) {
+    if (trainer.from > trainer.to) trainer.from = trainer.to
+    pattern.bpm = trainer.from
+    trainerBars = 0
+    if (playing.value) engine.reschedule()
+  }
+}
 
 // --- Transporte ---
 async function togglePlay() {
@@ -29,8 +60,25 @@ function onTempo(v) {
 
 // --- Playhead: leemos la fase del motor por rAF, sin acoplar audio a la UI ---
 let raf = null
+let lastPhase = -1
 function tick() {
-  if (playing.value) phase.value = engine.phase()
+  if (playing.value) {
+    const ph = engine.phase()
+    phase.value = ph
+    // Detección de cambio de compás (la fase "envuelve" de ~1 a ~0).
+    if (trainer.on && ph >= 0 && lastPhase >= 0 && ph < lastPhase - 0.3) {
+      if (++trainerBars >= trainer.everyBars) {
+        trainerBars = 0
+        if (pattern.bpm < trainer.to) {
+          pattern.bpm = Math.min(trainer.to, pattern.bpm + trainer.step)
+          engine.reschedule()
+        }
+      }
+    }
+    lastPhase = ph
+  } else {
+    lastPhase = -1
+  }
   raf = requestAnimationFrame(tick)
 }
 onMounted(() => {
@@ -174,6 +222,10 @@ const instColor = (id) => INSTRUMENTS[id].color
         <button v-for="(r, key) in SEED_RHYTHMS" :key="key" class="chip" @click="loadRhythm(key)">
           {{ r.label }}
         </button>
+        <div class="viewtoggle">
+          <button :class="{ on: view === 'grid' }" @click="view = 'grid'">Grilla</button>
+          <button :class="{ on: view === 'wheel' }" @click="view = 'wheel'">Círculo</button>
+        </div>
       </div>
     </header>
 
@@ -227,8 +279,37 @@ const instColor = (id) => INSTRUMENTS[id].color
       <button class="ghost" @click="load">Cargar</button>
     </section>
 
-    <!-- Tracks + grilla -->
-    <section class="tracks">
+    <!-- Panel de práctica: modos de estudio + tempo progresivo -->
+    <section class="practice">
+      <div class="pblock">
+        <span class="plabel">Práctica</span>
+        <select v-model="study.mode" @change="onStudyMode">
+          <option value="none">Banda completa</option>
+          <option value="practice">Practicar (silenciar uno)</option>
+          <option value="isolate">Aislar uno</option>
+        </select>
+        <select v-if="study.mode !== 'none'" v-model="study.trackId" @change="applyStudy">
+          <option v-for="t in pattern.tracks" :key="t.id" :value="t.id">{{ instName(t.instrument) }}</option>
+        </select>
+        <span v-if="study.mode === 'practice'" class="phint">→ lo tocás vos encima de la banda</span>
+        <span v-else-if="study.mode === 'isolate'" class="phint">→ escuchás solo ese instrumento</span>
+      </div>
+
+      <div class="pblock">
+        <label class="toggle">
+          <input type="checkbox" v-model="trainer.on" @change="onTrainer" /> Tempo progresivo
+        </label>
+        <template v-if="trainer.on">
+          <span class="ttf">de <input class="num" type="number" min="40" max="240" v-model.number="trainer.from" @change="onTrainer" /></span>
+          <span class="ttf">a <input class="num" type="number" min="40" max="240" v-model.number="trainer.to" /></span>
+          <span class="ttf">+<input class="num" type="number" min="1" max="20" v-model.number="trainer.step" /> BPM</span>
+          <span class="ttf">c/<input class="num" type="number" min="1" max="16" v-model.number="trainer.everyBars" /> comp.</span>
+        </template>
+      </div>
+    </section>
+
+    <!-- Vista GRILLA (editor) -->
+    <section v-if="view === 'grid'" class="tracks">
       <div v-for="track in pattern.tracks" :key="track.id" class="track">
         <div class="track-head" :style="{ '--c': instColor(track.instrument) }">
           <span class="swatch" />
@@ -263,8 +344,21 @@ const instColor = (id) => INSTRUMENTS[id].color
       </div>
     </section>
 
-    <!-- Agregar instrumento -->
-    <section class="add">
+    <!-- Vista CÍRCULO (práctica) -->
+    <div v-else class="wheelwrap">
+      <CircularView :pattern="pattern" :phase="phase" :cell-click="cellClick" :cell-stroke="cellStroke" />
+      <div class="legend">
+        <div v-for="t in pattern.tracks" :key="t.id" class="litem">
+          <span class="lsw" :style="{ background: instColor(t.instrument) }" />
+          <span class="lname">{{ instName(t.instrument) }}</span>
+          <button class="mini" :class="{ act: t.mute }" @click="toggleMute(t)" title="Silenciar">M</button>
+          <button class="mini solo" :class="{ act: t.solo }" @click="toggleSolo(t)" title="Solo">S</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agregar instrumento (sólo en el editor) -->
+    <section v-if="view === 'grid'" class="add">
       <select v-model="newInstrument">
         <option v-for="id in INSTRUMENT_IDS" :key="id" :value="id">{{ instName(id) }}</option>
       </select>
@@ -275,6 +369,11 @@ const instColor = (id) => INSTRUMENTS[id].color
         <b>Humaniza</b> mientras suena. Probá <b>3 contra 2</b> para oír la polirritmia.
       </p>
     </section>
+    <p v-else class="hint wheelhint">
+      Vista de práctica: la manecilla gira con el pulso. Tocá los puntos para editar
+      (click = dinámica, click derecho = golpe). Elegí un <b>modo de estudio</b> arriba
+      para silenciar o aislar un instrumento.
+    </p>
   </div>
 </template>
 
@@ -290,9 +389,30 @@ const instColor = (id) => INSTRUMENTS[id].color
 .brand { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; }
 .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: #e07a5f; box-shadow: 0 0 12px #e07a5f; }
 .tag { font-size: 11px; font-weight: 500; color: #8a8580; background: #2a2825; padding: 3px 8px; border-radius: 20px; }
-.rhythms { display: flex; gap: 8px; flex-wrap: wrap; }
+.rhythms { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .chip { background: #2a2825; color: #d8d4cf; border: 1px solid #3a3733; border-radius: 20px; padding: 6px 14px; cursor: pointer; font-size: 13px; }
 .chip:hover { background: #34312d; border-color: #4a463f; }
+.viewtoggle { display: inline-flex; margin-left: 4px; border: 1px solid #3a3733; border-radius: 20px; overflow: hidden; }
+.viewtoggle button { background: #1c1b1a; color: #9a958f; border: none; padding: 6px 14px; cursor: pointer; font-size: 13px; }
+.viewtoggle button.on { background: #e07a5f; color: #1a1817; font-weight: 600; }
+
+.practice {
+  display: flex; gap: 22px; flex-wrap: wrap; align-items: center;
+  background: #1e1d1c; border: 1px solid #302d2a; border-radius: 12px;
+  padding: 10px 16px; margin-bottom: 18px;
+}
+.pblock { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.plabel { font-weight: 600; color: #d8d4cf; }
+.phint { font-size: 12px; color: #8a8580; }
+.ttf { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #9a958f; }
+.num { width: 48px; background: #1c1b1a; color: #e8e6e3; border: 1px solid #3a3733; border-radius: 6px; padding: 4px 6px; font-size: 13px; }
+
+.wheelwrap { background: #201f1e; border: 1px solid #302d2a; border-radius: 12px; padding: 18px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
+.litem { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.lsw { width: 12px; height: 12px; border-radius: 50%; }
+.lname { color: #d8d4cf; }
+.wheelhint { text-align: center; }
 
 .transport {
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
