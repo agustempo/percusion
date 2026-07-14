@@ -35,8 +35,16 @@ export class Engine {
       const AC = window.AudioContext || window.webkitAudioContext
       this.ctx = new AC()
       this.master = this.ctx.createGain()
-      this.master.gain.value = 0.9
-      this.master.connect(this.ctx.destination)
+      this.master.gain.value = 0.85
+      // Compresor/limitador en el master: pega la mezcla y doma los picos
+      // cuando suenan varios instrumentos (con acentos) a la vez.
+      const comp = this.ctx.createDynamicsCompressor()
+      comp.threshold.value = -10
+      comp.knee.value = 6
+      comp.ratio.value = 4
+      comp.attack.value = 0.003
+      comp.release.value = 0.12
+      this.master.connect(comp).connect(this.ctx.destination)
     }
     if (this.ctx.state === 'suspended') await this.ctx.resume()
   }
