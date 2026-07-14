@@ -1,0 +1,22 @@
+{
+  "surdo/open": "surdo_open.mp3",
+  "surdo/mute": "surdo_mute.mp3",
+  "caixa/hit": "caixa_hit.mp3",
+  "agogo/hi": "agogo_hi.mp3",
+  "agogo/lo": "agogo_lo.mp3",
+  "chocalho/hit": "chocalho_hit.mp3",
+  "clave/hit": "clave_hit.mp3",
+  "conga/open": "conga_open.mp3",
+  "conga/slap": "conga_slap.mp3",
+  "conga/mute": "conga_mute.mp3",
+  "bongo/open": "bongo_open.mp3",
+  "bongo/slap": "bongo_slap.mp3",
+  "djembe/bass": "djembe_bass.mp3",
+  "djembe/tone": "djembe_tone.mp3",
+  "djembe/slap": "djembe_slap.mp3",
+  "cencerro/hit": "cencerro_hit.mp3",
+  "woodblock/hi": "woodblock_hi.mp3",
+  "woodblock/lo": "woodblock_lo.mp3",
+  "triangulo/open": "triangulo_open.mp3",
+  "bombo/hit": "bombo_hit.mp3"
+}

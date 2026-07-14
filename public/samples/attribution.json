@@ -1,0 +1,202 @@
+[
+  {
+    "instrument": "surdo",
+    "stroke": "open",
+    "name": "TanTan.wav",
+    "author": "justinrobert",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/justinrobert/sounds/73754/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "surdo",
+    "stroke": "mute",
+    "name": "floortommat.wav",
+    "author": "lewis",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/lewis/sounds/15580/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "caixa",
+    "stroke": "hit",
+    "name": "Caixa Rim Hit / Side stick",
+    "author": "Sassaby",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/Sassaby/sounds/531785/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "agogo",
+    "stroke": "hi",
+    "name": "Agogo_Bell_Low_Velocity20.wav",
+    "author": "pjcohen",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseLabel": "CC BY 4.0",
+    "url": "https://freesound.org/people/pjcohen/sounds/414560/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "agogo",
+    "stroke": "lo",
+    "name": "Agogo_Bell_Low_Velocity11.wav",
+    "author": "pjcohen",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseLabel": "CC BY 4.0",
+    "url": "https://freesound.org/people/pjcohen/sounds/414563/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "chocalho",
+    "stroke": "hit",
+    "name": "Samba Chocalho de Platinela - Forward 7",
+    "author": "CamTarn",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/CamTarn/sounds/556081/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "clave",
+    "stroke": "hit",
+    "name": "Percussion clave like hit",
+    "author": "Sajmund",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/Sajmund/sounds/132417/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "conga",
+    "stroke": "open",
+    "name": "fTumQuintoOR.aif",
+    "author": "ramjac",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseLabel": "CC BY 4.0",
+    "url": "https://freesound.org/people/ramjac/sounds/21389/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "conga",
+    "stroke": "slap",
+    "name": "QuintoRO2.aif",
+    "author": "ramjac",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseLabel": "CC BY 4.0",
+    "url": "https://freesound.org/people/ramjac/sounds/21363/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "conga",
+    "stroke": "mute",
+    "name": "QuintoS7R.aif",
+    "author": "ramjac",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseLabel": "CC BY 4.0",
+    "url": "https://freesound.org/people/ramjac/sounds/21375/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "bongo",
+    "stroke": "open",
+    "name": "Bongo1.wav",
+    "author": "menegass",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/menegass/sounds/99751/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "bongo",
+    "stroke": "slap",
+    "name": "Synth Percussion 1.wav",
+    "author": "Bertrof",
+    "license": "http://creativecommons.org/licenses/by/3.0/",
+    "licenseLabel": "CC BY 3.0",
+    "url": "https://freesound.org/people/Bertrof/sounds/131654/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "djembe",
+    "stroke": "bass",
+    "name": "Djembe_low_2_loud.wav",
+    "author": "reflecs",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/reflecs/sounds/21902/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "djembe",
+    "stroke": "tone",
+    "name": "Djembé",
+    "author": "Ramon_Qfwfq",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseLabel": "CC BY 4.0",
+    "url": "https://freesound.org/people/Ramon_Qfwfq/sounds/507878/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "djembe",
+    "stroke": "slap",
+    "name": "121-Djembe-Slap.wav",
+    "author": "klemmy",
+    "license": "http://creativecommons.org/licenses/by/3.0/",
+    "licenseLabel": "CC BY 3.0",
+    "url": "https://freesound.org/people/klemmy/sounds/203350/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "cencerro",
+    "stroke": "hit",
+    "name": "Cowbell.wav",
+    "author": "Neotone",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/Neotone/sounds/75338/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "woodblock",
+    "stroke": "hi",
+    "name": "Metronome.wav",
+    "author": "Druminfected",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/Druminfected/sounds/250552/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "woodblock",
+    "stroke": "lo",
+    "name": "BBeats Clo 05.wav",
+    "author": "Department64",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseLabel": "CC BY 4.0",
+    "url": "https://freesound.org/people/Department64/sounds/548322/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "triangulo",
+    "stroke": "open",
+    "name": "tri_p_2.wav",
+    "author": "tartina",
+    "license": "http://creativecommons.org/licenses/by/3.0/",
+    "licenseLabel": "CC BY 3.0",
+    "url": "https://freesound.org/people/tartina/sounds/250351/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "bombo",
+    "stroke": "hit",
+    "name": "bombo1.wav",
+    "author": "suzenako",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseLabel": "CC BY 4.0",
+    "url": "https://freesound.org/people/suzenako/sounds/48664/",
+    "source": "Freesound"
+  }
+]

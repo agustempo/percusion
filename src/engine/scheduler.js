@@ -58,9 +58,9 @@ export class Engine {
 
   // Dispara un golpe: usa el sample si existe, si no cae a la síntesis.
   _fire(stroke, instrument, strokeId, when, vel) {
-    const buf = sampleBank.get(instrument + '/' + strokeId)
-    if (buf) {
-      VOICES.sample(this.ctx, this.master, when, { buffer: buf, vel })
+    const s = sampleBank.get(instrument + '/' + strokeId)
+    if (s) {
+      VOICES.sample(this.ctx, this.master, when, { buffer: s.buffer, vel: vel * s.gain })
       return
     }
     const fn = VOICES[stroke.voice.type]
