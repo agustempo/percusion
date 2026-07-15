@@ -49,6 +49,10 @@ const CURATION = [
   { key: 'bombo/hit', q: ['bombo', 'bass drum acoustic', 'kick drum acoustic'] },
 ]
 
+// Instrumentos donde la síntesis propia gana: en Freesound casi no hay CC-BY
+// decentes y los que hay son largos (se solapan al repetir). Quedan en síntesis.
+const SYNTH_ONLY = new Set(['surdo', 'bombo'])
+
 // Etiqueta corta de licencia a partir de la URL (para el panel de créditos).
 function licenseLabel(url = '') {
   if (url.includes('publicdomain/zero')) return 'CC0'
@@ -65,7 +69,7 @@ async function search(q) {
     'https://freesound.org/apiv2/search/text/?' +
     new URLSearchParams({
       query: q,
-      filter: `${LICENSE_FILTER} duration:[0 TO 3]`,
+      filter: `${LICENSE_FILTER} duration:[0.1 TO 1.3]`,
       sort: 'downloads_desc',
       fields: 'id,name,username,license,url,previews',
       page_size: '8',
@@ -102,6 +106,10 @@ async function main() {
   const usedByInstrument = {} // instrumento -> Set de ids ya usados
   for (const { key, q } of CURATION) {
     const instrument = key.split('/')[0]
+    if (SYNTH_ONLY.has(instrument)) {
+      console.log(`  (síntesis) ${key}`)
+      continue
+    }
     const used = (usedByInstrument[instrument] ||= new Set())
     try {
       const s = await pick(q, used)

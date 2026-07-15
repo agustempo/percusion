@@ -1,52 +1,32 @@
 [
   {
-    "instrument": "surdo",
-    "stroke": "open",
-    "name": "TanTan.wav",
-    "author": "justinrobert",
-    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
-    "licenseLabel": "CC0",
-    "url": "https://freesound.org/people/justinrobert/sounds/73754/",
-    "source": "Freesound"
-  },
-  {
-    "instrument": "surdo",
-    "stroke": "mute",
-    "name": "floortommat.wav",
-    "author": "lewis",
-    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
-    "licenseLabel": "CC0",
-    "url": "https://freesound.org/people/lewis/sounds/15580/",
-    "source": "Freesound"
-  },
-  {
     "instrument": "caixa",
     "stroke": "hit",
-    "name": "Caixa Rim Hit / Side stick",
+    "name": "Samba Caixa Rimshot",
     "author": "Sassaby",
     "license": "http://creativecommons.org/publicdomain/zero/1.0/",
     "licenseLabel": "CC0",
-    "url": "https://freesound.org/people/Sassaby/sounds/531785/",
+    "url": "https://freesound.org/people/Sassaby/sounds/531784/",
     "source": "Freesound"
   },
   {
     "instrument": "agogo",
     "stroke": "hi",
-    "name": "Agogo_Bell_Low_Velocity20.wav",
-    "author": "pjcohen",
-    "license": "https://creativecommons.org/licenses/by/4.0/",
-    "licenseLabel": "CC BY 4.0",
-    "url": "https://freesound.org/people/pjcohen/sounds/414560/",
+    "name": "Agogo High3.wav",
+    "author": "BlueCircleSounds",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/BlueCircleSounds/sounds/524026/",
     "source": "Freesound"
   },
   {
     "instrument": "agogo",
     "stroke": "lo",
-    "name": "Agogo_Bell_Low_Velocity11.wav",
-    "author": "pjcohen",
-    "license": "https://creativecommons.org/licenses/by/4.0/",
-    "licenseLabel": "CC BY 4.0",
-    "url": "https://freesound.org/people/pjcohen/sounds/414563/",
+    "name": "Yamaha PSR-36 Agogo Low",
+    "author": "Joao_Janz",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "licenseLabel": "CC0",
+    "url": "https://freesound.org/people/Joao_Janz/sounds/477888/",
     "source": "Freesound"
   },
   {
@@ -72,16 +52,6 @@
   {
     "instrument": "conga",
     "stroke": "open",
-    "name": "fTumQuintoOR.aif",
-    "author": "ramjac",
-    "license": "https://creativecommons.org/licenses/by/4.0/",
-    "licenseLabel": "CC BY 4.0",
-    "url": "https://freesound.org/people/ramjac/sounds/21389/",
-    "source": "Freesound"
-  },
-  {
-    "instrument": "conga",
-    "stroke": "slap",
     "name": "QuintoRO2.aif",
     "author": "ramjac",
     "license": "https://creativecommons.org/licenses/by/4.0/",
@@ -91,12 +61,22 @@
   },
   {
     "instrument": "conga",
-    "stroke": "mute",
+    "stroke": "slap",
     "name": "QuintoS7R.aif",
     "author": "ramjac",
     "license": "https://creativecommons.org/licenses/by/4.0/",
     "licenseLabel": "CC BY 4.0",
     "url": "https://freesound.org/people/ramjac/sounds/21375/",
+    "source": "Freesound"
+  },
+  {
+    "instrument": "conga",
+    "stroke": "mute",
+    "name": "QuintoMoveTap1.aif",
+    "author": "ramjac",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "licenseLabel": "CC BY 4.0",
+    "url": "https://freesound.org/people/ramjac/sounds/21342/",
     "source": "Freesound"
   },
   {
@@ -127,16 +107,6 @@
     "license": "http://creativecommons.org/publicdomain/zero/1.0/",
     "licenseLabel": "CC0",
     "url": "https://freesound.org/people/reflecs/sounds/21902/",
-    "source": "Freesound"
-  },
-  {
-    "instrument": "djembe",
-    "stroke": "tone",
-    "name": "Djembé",
-    "author": "Ramon_Qfwfq",
-    "license": "https://creativecommons.org/licenses/by/4.0/",
-    "licenseLabel": "CC BY 4.0",
-    "url": "https://freesound.org/people/Ramon_Qfwfq/sounds/507878/",
     "source": "Freesound"
   },
   {
@@ -182,21 +152,11 @@
   {
     "instrument": "triangulo",
     "stroke": "open",
-    "name": "tri_p_2.wav",
-    "author": "tartina",
+    "name": "triangle open tubed.wav",
+    "author": "klemmy",
     "license": "http://creativecommons.org/licenses/by/3.0/",
     "licenseLabel": "CC BY 3.0",
-    "url": "https://freesound.org/people/tartina/sounds/250351/",
-    "source": "Freesound"
-  },
-  {
-    "instrument": "bombo",
-    "stroke": "hit",
-    "name": "bombo1.wav",
-    "author": "suzenako",
-    "license": "https://creativecommons.org/licenses/by/4.0/",
-    "licenseLabel": "CC BY 4.0",
-    "url": "https://freesound.org/people/suzenako/sounds/48664/",
+    "url": "https://freesound.org/people/klemmy/sounds/36102/",
     "source": "Freesound"
   }
 ]
