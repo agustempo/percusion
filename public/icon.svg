@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#2a2620"/>
+      <stop offset="60%" stop-color="#1a1815"/>
+      <stop offset="100%" stop-color="#131211"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- anillos (rhythm wheel) -->
+  <g fill="none" stroke="#3a3733" stroke-width="3">
+    <circle cx="256" cy="256" r="150"/>
+    <circle cx="256" cy="256" r="108"/>
+    <circle cx="256" cy="256" r="66"/>
+  </g>
+  <!-- pulsos: puntos por instrumento -->
+  <g>
+    <!-- anillo externo -->
+    <circle cx="256" cy="106" r="17" fill="#e07a5f"/>
+    <circle cx="386" cy="331" r="12" fill="#81b29a"/>
+    <circle cx="126" cy="331" r="12" fill="#f2cc8f"/>
+    <!-- anillo medio -->
+    <circle cx="256" cy="148" r="13" fill="#3d5a80"/>
+    <circle cx="364" cy="256" r="10" fill="#81b29a"/>
+    <circle cx="148" cy="256" r="10" fill="#e07a5f"/>
+    <!-- anillo interno -->
+    <circle cx="256" cy="190" r="10" fill="#e9c46a"/>
+    <circle cx="322" cy="256" r="9" fill="#c1666b"/>
+  </g>
+  <!-- manecilla + centro -->
+  <line x1="256" y1="256" x2="366" y2="146" stroke="#f4f1ec" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="12" fill="#f4f1ec"/>
+</svg>

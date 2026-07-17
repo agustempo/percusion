@@ -57,14 +57,21 @@ export class Engine {
   }
 
   // Dispara un golpe: usa el sample si existe, si no cae a la síntesis.
-  _fire(stroke, instrument, strokeId, when, vel) {
+  _fire(stroke, instrument, strokeId, when, vel, pan = 0) {
+    let dest = this.master
+    if (pan) {
+      const panner = this.ctx.createStereoPanner()
+      panner.pan.value = Math.max(-1, Math.min(1, pan))
+      panner.connect(this.master)
+      dest = panner
+    }
     const s = sampleBank.get(instrument + '/' + strokeId)
     if (s) {
-      VOICES.sample(this.ctx, this.master, when, { buffer: s.buffer, vel: vel * s.gain })
+      VOICES.sample(this.ctx, dest, when, { buffer: s.buffer, vel: vel * s.gain })
       return
     }
     const fn = VOICES[stroke.voice.type]
-    if (fn) fn(this.ctx, this.master, when, { ...stroke.voice, vel })
+    if (fn) fn(this.ctx, dest, when, { ...stroke.voice, vel })
   }
 
   // Crea un elemento <audio> con un loop de silencio real (PCM) + listeners
@@ -192,7 +199,7 @@ export class Engine {
             if (when < now) when = now + 0.001
             const gJit = 1 + (Math.random() * 2 - 1) * hum * 0.15
             const vel = Math.min(1.4, track.volume * cell.v * gJit)
-            this._fire(stroke, track.instrument, cell.s, when, vel)
+            this._fire(stroke, track.instrument, cell.s, when, vel, track.pan || 0)
           }
         }
         cur.absStep++

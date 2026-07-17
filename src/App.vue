@@ -413,6 +413,8 @@ const instColor = (id) => INSTRUMENTS[id].color
           <button class="mini solo" :class="{ act: track.solo }" @click="toggleSolo(track)" title="Solo">S</button>
 
           <input class="vol" type="range" min="0" max="1" step="0.05" v-model.number="track.volume" title="Volumen" />
+          <input class="pan" type="range" min="-1" max="1" step="0.1" v-model.number="track.pan"
+                 title="Paneo (izq/der) — doble click para centrar" @dblclick="track.pan = 0" />
           <button class="mini del" @click="removeTrack(track.id)" title="Quitar">×</button>
         </div>
 
@@ -571,6 +573,7 @@ select { background: #1c1b1a; color: #e8e6e3; border: 1px solid #3a3733; border-
 .mini.del { margin-left: auto; }
 .mini.del:hover { background: #6e2b2b; color: #fff; }
 .vol { width: 80px; }
+.pan { width: 58px; accent-color: #81b29a; }
 
 .grid { display: flex; gap: 10px; flex-wrap: wrap; }
 .grid.mono { gap: 4px; }
@@ -596,4 +599,28 @@ select { background: #1c1b1a; color: #e8e6e3; border: 1px solid #3a3733; border-
 .add { display: flex; align-items: center; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
 .hint { flex-basis: 100%; color: #8a8580; font-size: 12.5px; margin: 6px 0 0; }
 .hint b { color: #d8d4cf; }
+
+/* --- Mobile / pantallas chicas (donde más se practica) --- */
+@media (max-width: 640px) {
+  .app { padding: 14px 10px 48px; }
+  .top { gap: 10px; }
+  .brand { font-size: 15px; }
+  .tag { display: none; }
+  .rsel { flex: 1; min-width: 0; }
+  .transport, .practice { padding: 10px 12px; gap: 10px 14px; }
+  .tempo input[type=range] { width: 100px; }
+  .spacer { display: none; }
+  .pname { flex: 1; width: auto; min-width: 120px; }
+  .track { padding: 8px 10px; }
+  .track-head { flex-wrap: wrap; gap: 8px; }
+  .tname { min-width: 0; flex: 1; }
+  .vol { width: 70px; }
+  .pan { width: 52px; }
+  /* la grilla se achica para entrar; si aún no entra, hace scroll horizontal */
+  .grid { gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+  .beatgroup { gap: 3px; padding: 2px; }
+  .cell { width: 16px; height: 26px; }
+  .cell.alt::after { top: 2px; right: 2px; width: 4px; height: 4px; }
+  .pblock { gap: 6px; }
+}
 </style>

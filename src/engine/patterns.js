@@ -21,6 +21,7 @@ export function makeTrack(instrument, stepsPerBar, steps = null) {
     mute: false,
     solo: false,
     volume: 1,
+    pan: 0, // -1 izquierda · 0 centro · 1 derecha
   }
 }
 
@@ -264,6 +265,7 @@ export function normalizePattern(p) {
   if (typeof p.swing !== 'number') p.swing = 0
   if (typeof p.humanize !== 'number') p.humanize = 0
   for (const t of p.tracks) {
+    if (typeof t.pan !== 'number') t.pan = 0
     t.steps = t.steps.map((s) =>
       s == null ? null : typeof s === 'string' ? { s, v: VEL.normal } : s
     )
