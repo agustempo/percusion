@@ -96,6 +96,7 @@ function tick() {
 const credits = ref([])
 onMounted(() => {
   raf = requestAnimationFrame(tick)
+  loadLibrary()
   fetch(`${import.meta.env.BASE_URL}samples/attribution.json`, { cache: 'no-cache' })
     .then((r) => (r.ok ? r.json() : []))
     .then((c) => { credits.value = Array.isArray(c) ? c : [] })
@@ -208,22 +209,70 @@ function toggleSolo(t) { t.solo = !t.solo }
 function loadRhythm(key) {
   Object.assign(pattern, SEED_RHYTHMS[key].make())
   currentRhythm.value = key
+  currentSavedId = null // es un semilla fresco, no un guardado
   study.mode = 'none' // los tracks cambian: reseteamos el modo de estudio
   study.trackId = null
   if (playing.value) engine.reschedule()
 }
 
-// --- Persistencia local (sección 4: guardado offline) ---
-function save() {
-  localStorage.setItem('percussion:pattern', JSON.stringify(pattern))
-}
-function load() {
-  const raw = localStorage.getItem('percussion:pattern')
-  if (!raw) return
+// --- Mis ritmos guardados (biblioteca local, offline — sección 4/11) ---
+const LIB_KEY = 'percussion:library'
+const library = ref([])
+const showLibrary = ref(false)
+let currentSavedId = null // el ritmo guardado que estamos editando (si hay)
+
+function loadLibrary() {
   try {
-    Object.assign(pattern, normalizePattern(JSON.parse(raw)))
-    if (playing.value) engine.reschedule()
-  } catch { /* ignore */ }
+    const raw = localStorage.getItem(LIB_KEY)
+    library.value = raw ? JSON.parse(raw) : []
+  } catch {
+    library.value = []
+  }
+}
+function persistLibrary() {
+  localStorage.setItem(LIB_KEY, JSON.stringify(library.value))
+}
+function snapshot() {
+  return JSON.parse(JSON.stringify(pattern)) // sólo datos, sin proxies ni funciones
+}
+// Guardar: actualiza el ritmo abierto si ya venía guardado, si no crea uno nuevo.
+function saveCurrent() {
+  const name = (pattern.name || '').trim() || 'Sin nombre'
+  pattern.name = name
+  const existing = library.value.find((p) => p.id === currentSavedId)
+  if (existing) {
+    existing.name = name
+    existing.data = snapshot()
+    existing.savedAt = Date.now()
+  } else {
+    currentSavedId = Date.now().toString(36)
+    library.value.unshift({ id: currentSavedId, name, savedAt: Date.now(), data: snapshot() })
+  }
+  persistLibrary()
+  showLibrary.value = true
+}
+function loadSaved(item) {
+  Object.assign(pattern, normalizePattern(JSON.parse(JSON.stringify(item.data))))
+  currentSavedId = item.id
+  currentRhythm.value = '' // ya no es un semilla
+  study.mode = 'none'
+  study.trackId = null
+  showLibrary.value = false
+  if (playing.value) engine.reschedule()
+}
+function deleteSaved(item) {
+  const i = library.value.findIndex((p) => p.id === item.id)
+  if (i >= 0) library.value.splice(i, 1)
+  if (currentSavedId === item.id) currentSavedId = null
+  persistLibrary()
+}
+function fmtDate(ts) {
+  const d = new Date(ts)
+  return (
+    d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }) +
+    ' ' +
+    d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+  )
 }
 
 const instName = (id) => INSTRUMENTS[id].name
@@ -296,8 +345,25 @@ const instColor = (id) => INSTRUMENTS[id].color
       </label>
 
       <div class="spacer" />
-      <button class="ghost" @click="save">Guardar</button>
-      <button class="ghost" @click="load">Cargar</button>
+      <input class="pname" v-model="pattern.name" placeholder="Nombre del ritmo" title="Nombre del ritmo" />
+      <button class="ghost" @click="saveCurrent">Guardar</button>
+      <button class="ghost" :class="{ on: showLibrary }" @click="showLibrary = !showLibrary">
+        Mis ritmos ({{ library.length }})
+      </button>
+    </section>
+
+    <!-- Mis ritmos guardados (biblioteca local) -->
+    <section v-if="showLibrary" class="library">
+      <p v-if="!library.length" class="libempty">
+        Todavía no guardaste ningún ritmo. Poné un nombre arriba y tocá <b>Guardar</b>.
+      </p>
+      <div v-for="item in library" :key="item.id" class="libitem" :class="{ cur: item.id === currentSavedId }">
+        <button class="libload" @click="loadSaved(item)">
+          <b>{{ item.name }}</b>
+          <span class="libmeta">{{ item.data.tracks.length }} instrum. · {{ item.data.bpm }} BPM · {{ fmtDate(item.savedAt) }}</span>
+        </button>
+        <button class="mini del" @click="deleteSaved(item)" title="Borrar">×</button>
+      </div>
     </section>
 
     <!-- Panel de práctica: modos de estudio + tempo progresivo -->
@@ -473,6 +539,25 @@ select { background: #1c1b1a; color: #e8e6e3; border: 1px solid #3a3733; border-
 .spacer { flex: 1; }
 .ghost { background: transparent; color: #b8b4af; border: 1px solid #3a3733; border-radius: 7px; padding: 7px 12px; cursor: pointer; font-size: 13px; }
 .ghost:hover { background: #2a2825; }
+.ghost.on { background: #e07a5f; color: #1a1817; border-color: #e07a5f; font-weight: 600; }
+.pname { background: #1c1b1a; color: #e8e6e3; border: 1px solid #3a3733; border-radius: 7px; padding: 7px 10px; font-size: 13px; width: 150px; }
+
+.library {
+  background: #1e1d1c; border: 1px solid #302d2a; border-radius: 12px;
+  padding: 10px 12px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 6px;
+}
+.libempty { color: #8a8580; font-size: 13px; margin: 6px 4px; }
+.libempty b { color: #d8d4cf; }
+.libitem { display: flex; align-items: center; gap: 8px; }
+.libitem.cur .libload { border-color: #e07a5f; }
+.libload {
+  flex: 1; display: flex; flex-direction: column; gap: 2px; text-align: left;
+  background: #232120; border: 1px solid #33302c; border-radius: 8px;
+  padding: 8px 12px; cursor: pointer; color: #e8e6e3;
+}
+.libload:hover { background: #2a2825; border-color: #4a463f; }
+.libload b { font-size: 14px; }
+.libmeta { font-size: 11.5px; color: #8a8580; }
 
 .tracks { display: flex; flex-direction: column; gap: 10px; }
 .track { background: #201f1e; border: 1px solid #302d2a; border-radius: 10px; padding: 10px 12px; }
